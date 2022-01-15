@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             BizCardTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    CreatBizCard()
+                    CreateBizCard()
                 }
             }
         }
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CreatBizCard() {
+fun CreateBizCard() {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,6 +57,24 @@ fun CreatBizCard() {
             ) {
                 CreateImageProfile()
                 Divider()
+                Column(
+                    modifier = Modifier.padding(5.dp)
+                ) {
+                    Text(
+                        "Rocha R.",
+                        style = MaterialTheme.typography.h4,
+                        color = MaterialTheme.colors.primaryVariant
+                    )
+                    Text(
+                        text = "A simple developer",
+                        modifier = Modifier.padding(3.dp)
+                    )
+                    Text(
+                        text = "@development",
+                        modifier = Modifier.padding(5.dp),
+                        style = MaterialTheme.typography.subtitle2
+                    )
+                }
             }
         }
     }
@@ -86,6 +104,6 @@ private fun CreateImageProfile(modifier: Modifier = Modifier) {
 @Composable
 fun DefaultPreview() {
     BizCardTheme {
-        CreatBizCard()
+        CreateBizCard()
     }
 }

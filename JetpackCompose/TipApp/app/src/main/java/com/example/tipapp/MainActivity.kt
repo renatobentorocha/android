@@ -11,6 +11,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipapp.components.InputField
 import com.example.tipapp.ui.theme.TipAppTheme
+import com.example.tipapp.widgets.RoundIconButton
 
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
@@ -50,7 +54,7 @@ fun App(content: @Composable () -> Unit){
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun TopHeader(totalPerPerson: Double = 123.0){
     val total = "$%.2f".format(totalPerPerson)
@@ -82,9 +86,27 @@ fun TopHeader(totalPerPerson: Double = 123.0){
 }
 
 @ExperimentalComposeUiApi
-@Preview
+//@Preview
 @Composable
 fun MainContent(){
+    BillForm() { billAmount ->
+
+    }
+
+
+}
+
+//@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    App {
+        TopHeader()
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
     val valueState = remember {
         mutableStateOf("")
     }
@@ -112,17 +134,79 @@ fun MainContent(){
                 onAction = KeyboardActions {
                     if (!validState) return@KeyboardActions
 
+                    onValChange(valueState.value.toString().trim())
+
                     keyBoardController?.hide()
                 }
             )
+            
+            if(validState) {
+                CustomRow(
+                    leading = {
+                        Text(text = "Split")
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RoundIconButton(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = "Remove Icon",
+                            onClick = { /*TODO*/ }
+                        )
+                        RoundIconButton(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add Icon",
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+                }
+            } else {
+                Box() {
+                    
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true
+)
 @Composable
-fun DefaultPreview() {
-    App {
-        TopHeader()
+fun Test(){
+    CustomRow(
+        leading = {
+            Text(text = "Text 1")
+        }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RoundIconButton(
+                imageVector = Icons.Default.Remove,
+                contentDescription = "Remove Icon",
+                onClick = { /*TODO*/ }
+            )
+            RoundIconButton(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Icon",
+                onClick = { /*TODO*/ }
+            )
+            Text(text = "Text 4")
+        }
+    }
+}
+
+@Composable
+fun CustomRow(leading: @Composable () -> Unit, trailing: @Composable () -> Unit) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        leading()
+        trailing()
     }
 }

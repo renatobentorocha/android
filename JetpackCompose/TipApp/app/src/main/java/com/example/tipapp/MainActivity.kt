@@ -1,6 +1,7 @@
 package com.example.tipapp
 
 import android.os.Bundle
+import android.text.Layout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -54,7 +56,6 @@ fun App(content: @Composable () -> Unit){
     }
 }
 
-//@Preview
 @Composable
 fun TopHeader(totalPerPerson: Double = 123.0){
     val total = "$%.2f".format(totalPerPerson)
@@ -86,22 +87,9 @@ fun TopHeader(totalPerPerson: Double = 123.0){
 }
 
 @ExperimentalComposeUiApi
-//@Preview
 @Composable
 fun MainContent(){
-    BillForm() { billAmount ->
-
-    }
-
-
-}
-
-//@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    App {
-        TopHeader()
-    }
+    BillForm() { billAmount -> }
 }
 
 @ExperimentalComposeUiApi
@@ -119,7 +107,6 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
 
     Surface(
         modifier = Modifier
-            .padding(2.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
         border = BorderStroke(
@@ -129,6 +116,9 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
     ) {
         Column {
             InputField(
+                modifier = Modifier.padding(
+                    bottom = 10.dp
+                ),
                 valueState = valueState,
                 labelId = "Enter Bill",
                 onAction = KeyboardActions {
@@ -141,26 +131,9 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
             )
             
             if(validState) {
-                CustomRow(
-                    leading = {
-                        Text(text = "Split")
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RoundIconButton(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = "Remove Icon",
-                            onClick = { /*TODO*/ }
-                        )
-                        RoundIconButton(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add Icon",
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-                }
+                Split()
+                Tip()
+                TipSlider()
             } else {
                 Box() {
                     
@@ -174,10 +147,10 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
     showBackground = true
 )
 @Composable
-fun Test(){
+fun Split(){
     CustomRow(
         leading = {
-            Text(text = "Text 1")
+            Text(text = "Split")
         }
     ) {
         Row(
@@ -188,20 +161,67 @@ fun Test(){
                 contentDescription = "Remove Icon",
                 onClick = { /*TODO*/ }
             )
+            Text(
+                text = "10",
+                modifier = Modifier
+                    .padding(start = 9.dp, end = 9.dp)
+                    .align(alignment = Alignment.CenterVertically),
+            )
             RoundIconButton(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Add Icon",
                 onClick = { /*TODO*/ }
             )
-            Text(text = "Text 4")
         }
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun CustomRow(leading: @Composable () -> Unit, trailing: @Composable () -> Unit) {
+fun Tip() {
+    CustomRow(
+        modifier = Modifier.padding(vertical = 12.dp),
+        leading = {
+            Text(text = "Tip")
+        }
+    ) {
+        Text(
+            text = "$33.00",
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TipSlider() {
+    val sliderPosition = remember {
+        mutableStateOf(0f)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(text = "33%")
+        Slider(
+            value = sliderPosition.value,
+            onValueChange = {
+                sliderPosition.value = it
+            },
+            steps = 5
+        )
+    }
+}
+
+@Composable
+fun CustomRow(
+    modifier: Modifier = Modifier,
+    leading: @Composable () -> Unit,
+    trailing: @Composable () -> Unit
+) {
     Row (
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,7 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipapp.components.InputField
 import com.example.tipapp.ui.theme.TipAppTheme
+import com.example.tipapp.util.getTipValue
+import com.example.tipapp.util.getTotalPerPerson
 import com.example.tipapp.widgets.RoundIconButton
+import java.text.DecimalFormat
+import kotlin.math.max
 
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
@@ -39,7 +44,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             App {
                 Column {
-                    TopHeader()
                     MainContent()
                 }
             }
@@ -88,25 +92,61 @@ fun TopHeader(totalPerPerson: Double = 123.0){
 
 @ExperimentalComposeUiApi
 @Composable
-fun MainContent(){
-    BillForm() { billAmount -> }
+fun MainContent() {
+    val totalBillState = remember {
+        mutableStateOf("")
+    }
+
+    val validState = remember(totalBillState.value) {
+        totalBillState.value.trim().isNotEmpty()
+    }
+
+    val validTotalBill = remember(totalBillState.value) {
+        if (totalBillState.value.trim().isNotEmpty()) {
+            totalBillState.value.toDouble()
+        } else {
+            0.0
+        }
+    }
+
+    val sliderPositionState = remember {
+        mutableStateOf(0f)
+    }
+
+    val splitBy = remember {
+        mutableStateOf(1)
+    }
+
+    TopHeader(getTotalPerPerson(
+        validTotalBill,
+        sliderPositionState.value.toDouble(),
+        splitBy.value)
+    )
+    BillForm(
+        modifier = Modifier
+            .padding(horizontal = 15.dp)
+            .padding(top = 15.dp),
+        totalBillState = totalBillState,
+        validState = validState,
+        sliderPositionState = sliderPositionState,
+        splitBy = splitBy
+    ) { billAmount -> }
 }
 
 @ExperimentalComposeUiApi
 @Composable
-fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
-    val valueState = remember {
-        mutableStateOf("")
-    }
-
-    val validState = remember(valueState.value) {
-        valueState.value.trim().isNotEmpty()
-    }
-
+fun BillForm(
+    modifier: Modifier = Modifier,
+    totalBillState: MutableState<String>,
+    validState: Boolean,
+    sliderPositionState: MutableState<Float>,
+    splitBy: MutableState<Int>,
+    onValChange: (String) -> Unit = {},
+){
     val keyBoardController = LocalSoftwareKeyboardController.current
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
         border = BorderStroke(
@@ -119,21 +159,26 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
                 modifier = Modifier.padding(
                     bottom = 10.dp
                 ),
-                valueState = valueState,
+                valueState = totalBillState,
                 labelId = "Enter Bill",
                 onAction = KeyboardActions {
                     if (!validState) return@KeyboardActions
 
-                    onValChange(valueState.value.toString().trim())
+                    onValChange(totalBillState.value.toString().trim())
 
                     keyBoardController?.hide()
                 }
             )
             
             if(validState) {
-                Split()
-                Tip()
-                TipSlider()
+                Split(splitBy = splitBy)
+                Tip(
+                    getTipValue(
+                        totalBillState.value.toDouble(),
+                        sliderPositionState.value.toDouble()
+                    )
+                )
+                TipSlider(sliderPositionState)
             } else {
                 Box() {
                     
@@ -147,7 +192,7 @@ fun BillForm(modifier: Modifier = Modifier, onValChange: (String) -> Unit = {}){
     showBackground = true
 )
 @Composable
-fun Split(){
+fun Split(splitBy: MutableState<Int> = mutableStateOf(1)){
     CustomRow(
         leading = {
             Text(text = "Split")
@@ -159,10 +204,12 @@ fun Split(){
             RoundIconButton(
                 imageVector = Icons.Default.Remove,
                 contentDescription = "Remove Icon",
-                onClick = { /*TODO*/ }
+                onClick = {
+                    splitBy.value = max(1, splitBy.value - 1)
+                }
             )
             Text(
-                text = "10",
+                text = splitBy.value.toString(),
                 modifier = Modifier
                     .padding(start = 9.dp, end = 9.dp)
                     .align(alignment = Alignment.CenterVertically),
@@ -170,7 +217,9 @@ fun Split(){
             RoundIconButton(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Add Icon",
-                onClick = { /*TODO*/ }
+                onClick = {
+                    splitBy.value += 1
+                }
             )
         }
     }
@@ -178,7 +227,9 @@ fun Split(){
 
 @Preview(showBackground = true)
 @Composable
-fun Tip() {
+fun Tip(tip: Double = 33.00) {
+    val decimal = DecimalFormat("#,###.00")
+
     CustomRow(
         modifier = Modifier.padding(vertical = 12.dp),
         leading = {
@@ -186,24 +237,22 @@ fun Tip() {
         }
     ) {
         Text(
-            text = "$33.00",
+            text = "$${decimal.format(tip)}",
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TipSlider() {
-    val sliderPosition = remember {
-        mutableStateOf(0f)
-    }
+fun TipSlider(sliderPosition: MutableState<Float> = mutableStateOf(0f)) {
+    val tipPercentage = (sliderPosition.value * 100).toInt()
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = "33%")
+        Text(text = "$tipPercentage%")
         Slider(
             value = sliderPosition.value,
             onValueChange = {

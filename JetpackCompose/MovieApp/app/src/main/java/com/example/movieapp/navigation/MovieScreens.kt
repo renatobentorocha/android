@@ -1,4 +1,4 @@
-package com.example.movieapp.screens
+package com.example.movieapp.navigation
 
 import java.lang.IllegalArgumentException
 

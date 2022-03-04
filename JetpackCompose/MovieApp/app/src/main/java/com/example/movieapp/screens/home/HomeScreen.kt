@@ -1,5 +1,6 @@
 package com.example.movieapp.screens.home
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,12 +15,13 @@ import com.example.movieapp.model.getMovies
 import com.example.movieapp.navigation.MovieScreens
 import com.example.movieapp.widgets.MovieRow
 
+@ExperimentalAnimationApi
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                backgroundColor = Color.Magenta,
+                backgroundColor = Color.LightGray,
                 elevation = 5.dp
             ) {
                 Text(text = "Movies")
@@ -30,6 +32,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun MainContent(navController: NavController, movies: List<Movie> = getMovies()) {
     Column(

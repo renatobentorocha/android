@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.jetnote.data.NoteDateSource
 import com.example.jetnote.screen.NoteScreen
 import com.example.jetnote.ui.theme.JetNoteTheme
 
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                    NoteScreen(
-                       notes = emptyList(),
+                       notes = NoteDateSource().loadNote(),
                        onNoteAdd = {},
                        onNoteRemove = {}
                    )

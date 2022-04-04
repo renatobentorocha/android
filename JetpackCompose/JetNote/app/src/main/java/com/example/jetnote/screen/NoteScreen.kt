@@ -84,7 +84,7 @@ fun NoteScreen(
                 }
             })
         }
-    
+
         /* Notes */
 
         Divider(

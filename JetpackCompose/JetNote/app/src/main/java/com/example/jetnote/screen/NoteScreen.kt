@@ -1,5 +1,6 @@
 package com.example.jetnote.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,8 @@ fun NoteScreen(
     onNoteAdd: (Note) -> Unit,
     onNoteRemove: (Note) -> Unit
 ) {
+    val context = LocalContext.current
+
     var title by remember {
         mutableStateOf("")
     }
@@ -69,9 +73,18 @@ fun NoteScreen(
                 onTextChange = { description = it },
                 modifier = Modifier.padding(vertical = 10.dp)
             )
-            NoteButton(text = "Save", onClick = {})
-        }
+            NoteButton(text = "Save", onClick = {
+                if(title.isNotEmpty() && description.isNotEmpty()) {
+                    onNoteAdd(Note(title = title, description = description))
 
+                    title = ""
+                    description = ""
+
+                    Toast.makeText(context, "Note added", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+    
         /* Notes */
 
         Divider(
@@ -82,8 +95,8 @@ fun NoteScreen(
 
         LazyColumn {
             items(notes) {
-                NoteRow(note = it) {
-                    
+                NoteRow(note = it) {note ->
+                    onNoteRemove(note)
                 }
             }
         }
@@ -106,7 +119,7 @@ fun NoteRow(
     ) {
         Column(
             modifier = Modifier
-                .clickable {  }
+                .clickable { onClick(note) }
                 .padding(horizontal = 14.dp, vertical = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

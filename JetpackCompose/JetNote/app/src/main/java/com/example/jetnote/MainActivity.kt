@@ -8,10 +8,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jetnote.data.NoteDateSource
+import com.example.jetnote.model.Note
 import com.example.jetnote.screen.NoteScreen
 import com.example.jetnote.ui.theme.JetNoteTheme
 
@@ -26,10 +29,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    val notes = remember {
+                        mutableStateListOf<Note>()
+                    }
+
                    NoteScreen(
-                       notes = NoteDateSource().loadNote(),
-                       onNoteAdd = {},
-                       onNoteRemove = {}
+                       notes = notes,
+                       onNoteAdd = {
+                                   notes.add(it)
+                       },
+                       onNoteRemove = {
+                           notes.remove(it)
+                       }
                    )
                 }
             }

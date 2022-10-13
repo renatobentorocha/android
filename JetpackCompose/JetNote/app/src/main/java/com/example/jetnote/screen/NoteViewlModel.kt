@@ -18,7 +18,7 @@ import javax.inject.Inject
 class NoteViewlModel @Inject constructor(private val repository: NoteRepository) : ViewModel() {
 
     private val notesFlow = MutableStateFlow<List<Note>>(emptyList())
-    private var notes = notesFlow.asStateFlow()
+    val notes = notesFlow.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -33,11 +33,7 @@ class NoteViewlModel @Inject constructor(private val repository: NoteRepository)
         // notes.addAll(NoteDateSource().loadNote())
     }
 
-    suspend fun addNote(note: Note) = viewModelScope.launch { repository.add(note) }
-    suspend fun updateNote(note: Note) = viewModelScope.launch { repository.update(note) }
-    suspend fun removeNote(note: Note) = viewModelScope.launch { repository.delete(note) }
-
-    fun getNotes(): List<Note> {
-        return notes.value
-    }
+    fun addNote(note: Note) = viewModelScope.launch { repository.add(note) }
+    fun updateNote(note: Note) = viewModelScope.launch { repository.update(note) }
+    fun removeNote(note: Note) = viewModelScope.launch { repository.delete(note) }
 }

@@ -25,12 +25,11 @@ class NoteViewlModel @Inject constructor(private val repository: NoteRepository)
             repository.get().collect {
                 if(it.isNullOrEmpty()) {
                     Log.d("Empty", "Empty list")
-                } else {
-                    notesFlow.value = it
                 }
+
+                notesFlow.value = it
             }
         }
-        // notes.addAll(NoteDateSource().loadNote())
     }
 
     fun addNote(note: Note) = viewModelScope.launch { repository.add(note) }

@@ -27,7 +27,9 @@ import com.example.jetnote.components.NoteButton
 import com.example.jetnote.components.NoteInputText
 import com.example.jetnote.data.NoteDateSource
 import com.example.jetnote.model.Note
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @ExperimentalComposeUiApi
 @Composable
@@ -131,10 +133,11 @@ fun NoteRow(
                 text = note.description,
                 style = MaterialTheme.typography.subtitle1
             )
-            /*Text(
-                text = note.entryDate.format(DateTimeFormatter.ofPattern("EEE, d MMM")),
+            Text(
+                text = SimpleDateFormat("\"EEE, d MMM\"",
+                    Locale.getDefault()).format(note.entryDate),
                 style = MaterialTheme.typography.caption
-            )*/
+            )
         }
 
     }

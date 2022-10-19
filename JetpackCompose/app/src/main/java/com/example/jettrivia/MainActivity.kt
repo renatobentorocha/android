@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jettrivia.screens.QuestionViewModel
+import com.example.jettrivia.screens.TriviaHome
 import com.example.jettrivia.ui.theme.JetTriviaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,20 +36,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Composable
-fun TriviaHome(viewModel: QuestionViewModel) {
-    val questions = viewModel.data.value.data?.toMutableList()
-
-    Log.d("QTS", "Quantities: ${questions?.size}")
-
-    Box{}
-}
-
-@Composable
-fun Questions(viewModel: QuestionViewModel) {
-
 }
 
 @Preview(showBackground = true)

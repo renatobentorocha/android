@@ -7,11 +7,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,7 @@ fun Questions(viewModel: QuestionViewModel) {
     if(viewModel.data.value.loading == true) {
         CircularProgressIndicator()
     } else {
-        QuestionDisplay()
+        QuestionDisplay(questions!!.random())
     }
 }
 
@@ -49,11 +48,27 @@ fun Questions(viewModel: QuestionViewModel) {
 @Composable
 fun QuestionDisplay(
     question: QuestionItem,
-    questionIndex: MutableState<Int>,
-    onNext: (Int) -> Unit) {
+    //questionIndex: MutableState<Int>,
+    //viewModel: QuestionViewModel,
+    onNext: (Int) -> Unit = {}) {
 
     val choices = remember(question) {
         question.choices.toMutableList()
+    }
+
+    val answerState = remember(question) {
+        mutableStateOf<Int?>(null)
+    }
+
+    val correctAnswer = remember(question) {
+        mutableStateOf<Boolean?>(null)
+    }
+
+    val updateAnswer: (Int) -> Unit = remember {
+        {
+            answerState.value = it
+            correctAnswer.value = choices[it] == question.answer
+        }
     }
 
     val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f,10f), 0f)
@@ -74,7 +89,7 @@ fun QuestionDisplay(
             DrawDottedLine(pathEffect)
 
             Column {
-                Text(text = "What's the meaning of all?",
+                Text(text = question.question,
                     modifier = Modifier
                         .padding(6.dp)
                         .align(Alignment.Start)
@@ -85,7 +100,7 @@ fun QuestionDisplay(
                     lineHeight = 22.sp
                 )
 
-                choices.forEachIndexed { index, s ->  
+                choices.forEachIndexed { index, answerText ->
                     Row(modifier = Modifier
                         .padding(3.dp)
                         .fillMaxWidth()
@@ -95,7 +110,8 @@ fun QuestionDisplay(
                             brush = Brush.linearGradient(
                                 colors = listOf(
                                     AppColors.mOffDarkPurple,
-                                    AppColors.mOffDarkPurple)
+                                    AppColors.mOffDarkPurple
+                                )
                             ),
                             shape = RoundedCornerShape(15.dp)
                         )
@@ -104,11 +120,25 @@ fun QuestionDisplay(
                                 topStartPercent = 50,
                                 topEndPercent = 50,
                                 bottomEndPercent = 50,
-                                bottomStartPercent = 50)
+                                bottomStartPercent = 50
+                            )
                         )
-                        .background(Color.Transparent)
+                        .background(Color.Transparent),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-
+                        RadioButton(
+                            selected = (answerState.value == index),
+                            onClick = { updateAnswer(index) },
+                            modifier = Modifier.padding(16.dp),
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor =
+                                    if(correctAnswer.value == true)
+                                        Color.Green.copy(alpha = 0.2f)
+                                    else
+                                        Color.Red.copy(alpha = 0.2f)
+                            )
+                        )
+                        Text(text = answerText)
                     }
                 }
             }

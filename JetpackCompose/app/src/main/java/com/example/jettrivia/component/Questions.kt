@@ -1,7 +1,5 @@
 package com.example.jettrivia.component
 
-import android.util.Log
-import android.view.RoundedCorner
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +17,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,10 +34,25 @@ import com.example.jettrivia.util.AppColors
 fun Questions(viewModel: QuestionViewModel) {
     val questions = viewModel.data.value.data?.toMutableList()
 
+    val index = remember {
+        mutableStateOf<Int>(0)
+    }
+
     if(viewModel.data.value.loading == true) {
         CircularProgressIndicator()
     } else {
-        QuestionDisplay(questions!!.random())
+
+        val question = try {
+            questions?.get(index.value)
+        } catch (e: Exception) {
+            null
+        }
+
+        if (question != null) {
+            QuestionDisplay(question, index, viewModel) {
+                index.value = index.value + 1
+            }
+        }
     }
 }
 
@@ -48,9 +60,9 @@ fun Questions(viewModel: QuestionViewModel) {
 @Composable
 fun QuestionDisplay(
     question: QuestionItem,
-    //questionIndex: MutableState<Int>,
-    //viewModel: QuestionViewModel,
-    onNext: (Int) -> Unit = {}) {
+    questionIndex: MutableState<Int>,
+    viewModel: QuestionViewModel,
+    onNext: () -> Unit = {}) {
 
     val choices = remember(question) {
         question.choices.toMutableList()
@@ -64,7 +76,7 @@ fun QuestionDisplay(
         mutableStateOf<Boolean?>(null)
     }
 
-    val updateAnswer: (Int) -> Unit = remember {
+    val updateAnswer: (Int) -> Unit = remember(question) {
         {
             answerState.value = it
             correctAnswer.value = choices[it] == question.answer
@@ -85,7 +97,7 @@ fun QuestionDisplay(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            QuestionTracker()
+            QuestionTracker(questionIndex.value + 1, )
             DrawDottedLine(pathEffect)
 
             Column {
@@ -138,8 +150,43 @@ fun QuestionDisplay(
                                         Color.Red.copy(alpha = 0.2f)
                             )
                         )
-                        Text(text = answerText)
+
+                        val selectedIndex = index == answerState.value
+                        val annotatedString = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color =
+                                when(selectedIndex) {
+                                    true ->
+                                        if(correctAnswer.value == true)
+                                            Color.Green.copy(alpha = 0.2f)
+                                        else
+                                            Color.Red.copy(alpha = 0.2f)
+                                    else -> {
+                                        AppColors.mOffWhite
+                                    }
+                                })
+                            ) {
+                                append(answerText)
+                            }
+                        }
+                        Text(text = annotatedString, modifier = Modifier.padding(6.dp))
                     }
+                }
+                Button(
+                    onClick = { onNext() },
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .align(Alignment.CenterHorizontally),
+                    shape = RoundedCornerShape(34.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = AppColors.mLightBlue
+                    )
+                ) {
+                    Text(
+                        text = "Next",
+                        modifier = Modifier.padding(4.dp),
+                        color = AppColors.mOffWhite,
+                        fontSize = 17.sp
+                    )
                 }
             }
         }
@@ -181,5 +228,4 @@ fun DrawDottedLine(effect: PathEffect) {
             pathEffect = effect
         )
     }
-
 }

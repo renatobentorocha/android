@@ -6,10 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -97,7 +94,11 @@ fun QuestionDisplay(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            QuestionTracker(questionIndex.value + 1, )
+            val totalQuestions = viewModel.getTotalQuestions()
+
+            if(questionIndex.value >= 3) ShowProgress(score = questionIndex.value)
+
+            QuestionTracker(questionIndex.value + 1, outOf = totalQuestions ?: 100)
             DrawDottedLine(pathEffect)
 
             Column {
@@ -193,7 +194,7 @@ fun QuestionDisplay(
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun QuestionTracker(counter: Int = 10, outOf: Int = 100) {
     Text(text = buildAnnotatedString {
@@ -227,5 +228,49 @@ fun DrawDottedLine(effect: PathEffect) {
             end = Offset(size.width, 0f),
             pathEffect = effect
         )
+    }
+}
+
+@Preview
+@Composable
+fun ShowProgress(score: Int = 12) {
+    val gradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFF95075),
+            Color(0xFFBE6BE5)
+        )
+    )
+
+    val progressFactor by remember(score) {
+        mutableStateOf(score * 0.005f)
+    }
+
+    Row(modifier = Modifier
+        .padding(3.dp)
+        .fillMaxWidth()
+        .height(45.dp)
+        .border(
+            width = 4.dp,
+            brush = Brush.linearGradient(listOf(AppColors.mLightPurple, AppColors.mLightPurple)),
+            shape = RoundedCornerShape(34.dp)
+        )
+        .clip(RoundedCornerShape(34.dp))
+        .background(Color.Transparent),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            contentPadding = PaddingValues(1.dp),
+            modifier = Modifier
+                .fillMaxWidth(progressFactor)
+                .background(brush = gradient),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Transparent,
+                disabledBackgroundColor = Color.Transparent
+            ),
+            enabled = false,
+            elevation = null,
+            onClick = {}) {
+            
+        }
     }
 }

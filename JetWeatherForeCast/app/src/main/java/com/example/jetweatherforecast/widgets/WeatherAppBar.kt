@@ -30,7 +30,7 @@ fun WeatherAppBar(
 ) {
     TopAppBar(
         title = { Title(text = title)},
-        actions = { Actions(isMainScreen) },
+        actions = { Actions(isMainScreen, onButtonSearchClick = onAddActionClicked) },
         navigationIcon = { NavigationAction(icon, onButtonClicked) },
         backgroundColor = Color.Transparent, 
         elevation = elevation)
@@ -51,9 +51,9 @@ fun NavigationAction(icon: ImageVector?, onButtonClicked: () -> Unit) {
 }
 
 @Composable
-fun Actions(isMainScreen: Boolean) {
+fun Actions(isMainScreen: Boolean, onButtonSearchClick: () -> Unit = {}) {
     if(isMainScreen) {
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { onButtonSearchClick.invoke() }) {
             Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
         }
         IconButton(onClick = { /*TODO*/ }) {

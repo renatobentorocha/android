@@ -30,6 +30,7 @@ import com.example.jetweatherforecast.R
 import com.example.jetweatherforecast.data.DataOrException
 import com.example.jetweatherforecast.model.Weather
 import com.example.jetweatherforecast.model.WeatherItem
+import com.example.jetweatherforecast.navigation.WeatherScreens
 import com.example.jetweatherforecast.utils.formatDate
 import com.example.jetweatherforecast.utils.formatDateTime
 import com.example.jetweatherforecast.utils.formatDecimals
@@ -59,6 +60,9 @@ fun MainScaffold(data: Weather?, navController: NavController) {
             title = "${data?.city?.name}, ${data?.city?.country}",
             navController = navController,
             elevation = 5.dp,
+            onAddActionClicked = {
+                navController.navigate(route = WeatherScreens.SearchScreen.name)
+            }
         ) {
             Log.d("TAG", "MainScaffold: button clicked")
         }

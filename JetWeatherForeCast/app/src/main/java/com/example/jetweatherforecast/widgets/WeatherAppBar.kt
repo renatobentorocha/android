@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.jetweatherforecast.navigation.WeatherScreens
 
 
 @Composable
@@ -87,7 +88,17 @@ fun ShowSettingDropDownMenu(showDialog: MutableState<Boolean>, navController: Na
                         )
                         Text(
                             text = s,
-                            modifier = Modifier.clickable {  },
+                            modifier = Modifier.clickable {
+                                navController.navigate(
+                                    route = when(s) {
+                                    "Favorites" -> WeatherScreens.FavoriteScreen.name
+                                    "About" -> WeatherScreens.AboutScreen.name
+                                    "Settings" -> WeatherScreens.SettingsScreen.name
+                                    else -> {
+                                        WeatherScreens.MainScreen.name
+                                    }
+                                })
+                            },
                             fontWeight = FontWeight.W300
                         )
                     }

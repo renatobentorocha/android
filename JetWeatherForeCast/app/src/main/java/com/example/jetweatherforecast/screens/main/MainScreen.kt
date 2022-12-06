@@ -1,12 +1,10 @@
 package com.example.jetweatherforecast.screens.main
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -14,33 +12,29 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.jetweatherforecast.R
 import com.example.jetweatherforecast.data.DataOrException
 import com.example.jetweatherforecast.model.Weather
 import com.example.jetweatherforecast.model.WeatherItem
 import com.example.jetweatherforecast.navigation.WeatherScreens
 import com.example.jetweatherforecast.utils.formatDate
-import com.example.jetweatherforecast.utils.formatDateTime
 import com.example.jetweatherforecast.utils.formatDecimals
 import com.example.jetweatherforecast.widgets.*
 
 @Composable
-fun MainScreen(navController: NavController, mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(
+    navController: NavController,
+    mainViewModel: MainViewModel = hiltViewModel(),
+    city: String?
+) {
+    Log.d("CITY", "MainScreen: $city")
     val weather = produceState<DataOrException<Weather, Boolean, Exception>>(
         initialValue = DataOrException(loading = true)) {
-        value = mainViewModel.getWeather("Istanbul")
+        value = mainViewModel.getWeather(city ?: "Istanbul")
     }.value
 
     if (weather.loading == true) {

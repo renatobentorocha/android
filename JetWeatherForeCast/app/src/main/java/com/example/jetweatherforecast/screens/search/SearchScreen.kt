@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.jetweatherforecast.navigation.WeatherScreens
 import com.example.jetweatherforecast.widgets.WeatherAppBar
 
 @Composable
@@ -45,7 +46,9 @@ fun SearchScreen(navController: NavController){
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SearchBar()
+                SearchBar() {
+navController.navigate("${WeatherScreens.MainScreen.name}/$it")
+                }
             }
         }
     }
@@ -62,7 +65,13 @@ fun SearchBar(onSearch: (String) -> Unit = {}) {
         CommonTextField(
             valueState = searchQueryState,
             placeholder = "Seattle",
-            onAction = KeyboardActions {  }
+            onAction = KeyboardActions {
+                if(valid) {
+                    onSearch(searchQueryState.value)
+                    searchQueryState.value = ""
+                    localSoftKeyboardController?.hide()
+                }
+            }
         )
     }
 }

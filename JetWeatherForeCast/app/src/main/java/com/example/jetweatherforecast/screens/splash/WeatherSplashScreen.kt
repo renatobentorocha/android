@@ -46,7 +46,7 @@ fun WeatherSplashScreen(navController: NavController = rememberNavController()) 
 
         delay(500L)
 
-        navController.navigate(WeatherScreens.MainScreen.name)
+        navController.navigate("${WeatherScreens.MainScreen.name}/Istanbul")
     })
 
     Surface(
